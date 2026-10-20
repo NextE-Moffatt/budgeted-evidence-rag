@@ -1,0 +1,24 @@
+[
+  {"question_id": "q1", "steps": [
+    {"round": 1, "retrieved_ids": ["p1"], "proposal": {"answer": "Northmere", "citations": ["p1"], "confidence": 0.95, "sufficiency": 0.3, "next_query": "Northmere country"}, "cost": {"retrieval_calls": 1, "reader_calls": 1, "input_tokens": 100, "output_tokens": 20, "retrieval_ms": 1, "reader_ms": 10}, "status": "ok"},
+    {"round": 2, "retrieved_ids": ["p2"], "proposal": {"answer": "Westland", "citations": ["p1", "p2"], "confidence": 0.9, "sufficiency": 0.95, "next_query": "Meridian Eastland"}, "cost": {"retrieval_calls": 1, "reader_calls": 1, "input_tokens": 150, "output_tokens": 20, "retrieval_ms": 1, "reader_ms": 10}, "status": "ok"},
+    {"round": 3, "retrieved_ids": ["p3"], "proposal": {"answer": "Eastland", "citations": ["p3"], "confidence": 0.98, "sufficiency": 0.98, "next_query": ""}, "cost": {"retrieval_calls": 1, "reader_calls": 1, "input_tokens": 200, "output_tokens": 20, "retrieval_ms": 1, "reader_ms": 10}, "status": "ok"}
+  ]},
+  {"question_id": "q2", "steps": [
+    {"round": 1, "retrieved_ids": ["p4"], "proposal": {"answer": "1984", "citations": ["p4"], "confidence": 0.9, "sufficiency": 0.9, "next_query": "Harbor context"}, "cost": {"retrieval_calls": 1, "reader_calls": 1, "input_tokens": 100, "output_tokens": 20, "retrieval_ms": 1, "reader_ms": 10}, "status": "ok"},
+    {"round": 2, "retrieved_ids": ["p3"], "proposal": {"answer": "1984", "citations": ["p4"], "confidence": 0.9, "sufficiency": 0.9, "next_query": "Harbor visitors"}, "cost": {"retrieval_calls": 1, "reader_calls": 1, "input_tokens": 150, "output_tokens": 20, "retrieval_ms": 1, "reader_ms": 10}, "status": "ok"},
+    {"round": 3, "retrieved_ids": ["p7"], "proposal": {"answer": "1984", "citations": ["p4"], "confidence": 0.9, "sufficiency": 0.9, "next_query": ""}, "cost": {"retrieval_calls": 1, "reader_calls": 1, "input_tokens": 200, "output_tokens": 20, "retrieval_ms": 1, "reader_ms": 10}, "status": "ok"}
+  ]},
+  {"question_id": "q3", "steps": [
+    {"round": 1, "retrieved_ids": ["p5"], "proposal": {"answer": null, "citations": [], "confidence": 0.2, "sufficiency": 0.2, "next_query": "Lumen Society headquarters"}, "cost": {"retrieval_calls": 1, "reader_calls": 1, "input_tokens": 100, "output_tokens": 20, "retrieval_ms": 1, "reader_ms": 10}, "status": "ok"},
+    {"round": 2, "retrieved_ids": ["p6"], "proposal": {"answer": "Bellhaven", "citations": ["p5", "p6"], "confidence": 0.7, "sufficiency": 0.9, "next_query": "Aurora organization"}, "cost": {"retrieval_calls": 1, "reader_calls": 1, "input_tokens": 150, "output_tokens": 20, "retrieval_ms": 1, "reader_ms": 10}, "status": "ok"},
+    {"round": 3, "retrieved_ids": ["p3"], "proposal": {"answer": "Bellhaven", "citations": ["p5", "p6"], "confidence": 0.9, "sufficiency": 0.9, "next_query": ""}, "cost": {"retrieval_calls": 1, "reader_calls": 1, "input_tokens": 200, "output_tokens": 20, "retrieval_ms": 1, "reader_ms": 10}, "status": "ok"}
+  ]},
+  {"question_id": "q4", "steps": [
+    {"round": 1, "retrieved_ids": ["p7"], "proposal": {"answer": null, "citations": [], "confidence": 0.1, "sufficiency": 0.1, "next_query": "Clock visitors 2020"}, "cost": {"retrieval_calls": 1, "reader_calls": 1, "input_tokens": 100, "output_tokens": 20, "retrieval_ms": 1, "reader_ms": 10}, "status": "ok"},
+    {"round": 2, "retrieved_ids": ["p3"], "proposal": {"answer": null, "citations": [], "confidence": 0.1, "sufficiency": 0.1, "next_query": ""}, "cost": {"retrieval_calls": 1, "reader_calls": 1, "input_tokens": 150, "output_tokens": 20, "retrieval_ms": 1, "reader_ms": 10}, "status": "ok"}
+  ]},
+  {"question_id": "q5", "steps": [
+    {"round": 1, "retrieved_ids": ["p1"], "proposal": {"answer": null, "citations": [], "confidence": 0, "sufficiency": 0, "next_query": ""}, "cost": {"retrieval_calls": 1, "reader_calls": 1, "input_tokens": null, "output_tokens": null, "retrieval_ms": 1, "reader_ms": 10}, "status": "reader_error"}
+  ]}
+]

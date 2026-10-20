@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "provenance": {
+    "kind": "synthetic_fixture",
+    "dataset": "fictional software smoke",
+    "warning": "Invented entities and hand-authored reader outputs; not benchmark results"
+  },
+  "passages": [
+    {"id": "p1", "title": "Meridian Institute", "text": "Meridian Institute is based in Northmere.", "source_id": "fiction-meridian"},
+    {"id": "p2", "title": "Northmere", "text": "Northmere is a city in Westland.", "source_id": "fiction-northmere"},
+    {"id": "p3", "title": "Eastland", "text": "Eastland hosts a different institute, not Meridian.", "source_id": "fiction-eastland"},
+    {"id": "p4", "title": "Harbor Archive", "text": "The Harbor Archive opened in 1984.", "source_id": "fiction-harbor"},
+    {"id": "p5", "title": "Aurora Prize", "text": "The Aurora Prize was established by the Lumen Society.", "source_id": "fiction-aurora"},
+    {"id": "p6", "title": "Lumen Society", "text": "The Lumen Society headquarters are in Bellhaven.", "source_id": "fiction-lumen"},
+    {"id": "p7", "title": "Clock Museum", "text": "The Clock Museum has no published visitor statistics.", "source_id": "fiction-clock"}
+  ],
+  "examples": [
+    {"id": "q1", "question": "In which country is Meridian Institute located?", "candidate_ids": ["p1", "p2", "p3"], "answers": ["Westland"], "gold_passage_ids": ["p1", "p2"], "group_id": "smoke-connected", "split": "train"},
+    {"id": "q2", "question": "When did Harbor Archive open?", "candidate_ids": ["p4", "p3", "p7"], "answers": ["1984"], "gold_passage_ids": ["p4"], "group_id": "smoke-connected", "split": "train"},
+    {"id": "q3", "question": "Where is the headquarters of the organization that established the Aurora Prize?", "candidate_ids": ["p5", "p6", "p3"], "answers": ["Bellhaven"], "gold_passage_ids": ["p5", "p6"], "group_id": "smoke-connected", "split": "train"},
+    {"id": "q4", "question": "What was the Clock Museum visitor count in 2020?", "candidate_ids": ["p7", "p3"], "answers": ["1420"], "gold_passage_ids": [], "group_id": "smoke-connected", "split": "train"},
+    {"id": "q5", "question": "Which city hosts Meridian Institute?", "candidate_ids": ["p1", "p2"], "answers": ["Northmere"], "gold_passage_ids": ["p1"], "group_id": "smoke-connected", "split": "train"}
+  ]
+}

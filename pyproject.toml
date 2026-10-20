@@ -1,0 +1,33 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "budgeted-evidence-rag"
+version = "0.1.0"
+description = "Research scaffold for transferable stopping in iterative retrieval-augmented generation"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = ["bm25s==0.2.14", "httpx==0.28.1"]
+
+[project.optional-dependencies]
+dev = ["pytest==8.3.5", "ruff==0.11.13"]
+
+[project.scripts]
+evidence-rag = "evidence_rag.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+evidence_rag = ["fixtures/*.json"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-ra"
+
+[tool.ruff]
+line-length = 100
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP"]
