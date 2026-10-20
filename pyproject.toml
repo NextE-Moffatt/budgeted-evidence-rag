@@ -12,6 +12,7 @@ dependencies = ["bm25s==0.2.14", "httpx==0.28.1"]
 
 [project.optional-dependencies]
 dev = ["pytest==8.3.5", "ruff==0.11.13"]
+data = ["pyarrow==23.0.1"]
 
 [project.scripts]
 evidence-rag = "evidence_rag.cli:main"

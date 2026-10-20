@@ -38,6 +38,13 @@ Train two probabilities or signed magnitudes, then choose continuation only when
 exceeds its explicit acquisition cost. This is an experimental proposal, not implemented or validated.
 Loss choice, features, calibration, and the decision threshold must be selected on non-test splits.
 
+Important: `E[max(delta, 0)] - E[max(-delta, 0)] = E[delta]`. Two heads followed by simple
+subtraction are only a decomposition of scalar expected value, not a mathematical novelty. A method
+claim needs evidence of better estimation, harm discrimination or transfer under matched capacity and
+features. Risk-sensitive decisions may be investigated, but no unproved risk guarantee is implied.
+HALT already transfers a HotpotQA-trained verifier across datasets and backbones. Transfer alone is
+therefore not novel either. The novelty gate is currently unresolved and must precede method training.
+
 An ordinary full trajectory supplies only one observed continuation. Calling its delta a causal effect
 or a cost-optimal action is invalid. Matched branch rollouts, pre-specified alternative queries, repeated
 seeds, and uncertainty intervals are needed for counterfactual claims; their collection cost counts.

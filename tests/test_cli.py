@@ -118,3 +118,21 @@ def test_collection_evaluation_pipeline_with_mock_reader(dataset, tmp_path, monk
     assert report["questions"] == 2
     audit = json.loads((evaluation / "continuation_audit.json").read_text())
     assert audit["beneficial"] == audit["harmful"] == 0
+
+
+def test_negative_offset_rejected_before_dataset_access(tmp_path):
+    args = parser().parse_args(
+        [
+            "collect",
+            "--dataset",
+            "missing.json",
+            "--split",
+            "train",
+            "--offset",
+            "-1",
+            "--output",
+            str(tmp_path / "output"),
+        ]
+    )
+    with pytest.raises(ValueError, match="offset"):
+        run(args)

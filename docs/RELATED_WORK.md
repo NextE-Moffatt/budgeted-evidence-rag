@@ -31,3 +31,26 @@ not a main-conference acceptance. Summaries are short and provisional pending fu
 These two full-text audits remain TODO. Do not call their venues verified or assert a settled gap.
 Track code availability, exact datasets, cost definitions and official reproduction instructions during
 the week-1 audit. No baseline is considered reproduced simply because its paper appears in this table.
+
+## Stop-RAG Full-Text Check
+
+[Paper sections 4.2 and 5](https://arxiv.org/html/2510.14337v1) and
+[author implementation](https://github.com/chosolbee/Stop-RAG): full trajectories are already collected
+without early stopping. Each prefix is scored using eight answer-generation trials; the controller
+learns STOP/CONT values with full-width Q(lambda) targets. Therefore collecting paired stop/continue
+labels or repeated answers alone is not our novelty. The paper filters uninformative zero-reward
+states for training; our evaluation must still retain failures and abstentions in its denominator.
+Its HotpotQA retrieval uses the processed Wikipedia corpus, whereas our initial distractor pilot uses
+per-question candidate sets. Pilot results cannot be presented as directly comparable reproduction
+scores. Reproduction must align corpus, query/reader policy, terminal reward and sampling costs.
+Cross-dataset evaluation in our proposal means train on a source dataset and freeze before transfer,
+not merely report separately fitted models on several datasets. Implementation audit remains pending.
+
+## HALT Full-Text Check
+
+[Main text and appendix A](https://arxiv.org/html/2608.02009v3) already reuse a verifier trained on
+HotpotQA across datasets and backbone scales, with additional cross-training diagnostics. Thus
+HotpotQA-to-MuSiQue transfer or a lightweight frozen-host verifier is NOT a standalone new contribution.
+Generated hop claims are separate from the gold-hop diagnostic condition. Match this distinction in
+baseline comparisons and charge claim generation and verification. Novelty must survive comparison
+against these existing transfer results, not merely demonstrate any cross-dataset transfer.

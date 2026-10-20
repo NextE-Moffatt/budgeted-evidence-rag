@@ -13,11 +13,13 @@ from time import perf_counter
 from . import __version__
 from .collection import collect
 from .data import SPLITS, dataset_dict, digest, file_sha, load_dataset, load_traces, write_json
+from .download import download_hotpot, fetch_pilot
 from .evaluation import evaluate
 from .hotpot import convert_hotpot
 from .metrics import answer_scores
 from .policies import StopPolicy
 from .reader import SYSTEM_PROMPT, HTTPReader
+from .retrieval_audit import audit_retrieval
 from .schema import Dataset, Trace, sum_cost
 from .splits import audit_split_leakage
 
@@ -39,6 +41,10 @@ def manifest(config: dict, input_hashes: dict) -> dict:
         p: importlib.metadata.version(p)
         for p in ("bm25s", "httpx", "numpy", "scipy", "httpcore", "anyio", "h11", "certifi", "idna")
     }
+    try:
+        dependencies["pyarrow"] = importlib.metadata.version("pyarrow")
+    except importlib.metadata.PackageNotFoundError:
+        dependencies["pyarrow"] = None
     environment = {"python_version": sys.version.split()[0], "dependencies": dependencies}
     return {
         "schema_version": 1,
@@ -114,6 +120,8 @@ def validate_args(args: argparse.Namespace) -> None:
     for name in ("max_rounds", "limit", "top_k"):
         if hasattr(args, name) and getattr(args, name) < 1:
             raise ValueError(f"{name} must be positive")
+    if getattr(args, "offset", 0) < 0:
+        raise ValueError("offset must be nonnegative")
     if hasattr(args, "threshold"):
         StopPolicy("fixed", args.max_rounds, args.threshold)
     if getattr(args, "split", None) == "test" and not args.confirmatory:
@@ -125,13 +133,22 @@ def run(args: argparse.Namespace) -> dict:
     config = {
         k: v for k, v in vars(args).items() if k not in ("output", "dataset", "traces", "input")
     }
+    if args.command in ("fetch-hotpot", "fetch-hotpot-pilot"):
+        if not args.allow_download:
+            raise ValueError("dataset network access requires --allow-download")
+        if args.command == "fetch-hotpot-pilot":
+            return fetch_pilot(args.output, args.limit, args.seed)
+        return download_hotpot(args.output)
     if args.command == "prepare-hotpot":
         dataset, audit = convert_hotpot(args.input, args.limit, args.seed, args.source_split)
         audit_split_leakage(dataset)
         new_run(args.output)
         write_json(args.output / "dataset.json", dataset_dict(dataset))
         write_json(args.output / "split_audit.json", audit)
-        write_json(args.output / "manifest.json", manifest(config, {"input": file_sha(args.input)}))
+        write_json(
+            args.output / "manifest.json",
+            manifest(config, {"input": dataset.provenance["input_sha256"]}),
+        )
         return audit
     if args.command == "smoke":
         fixture_dir = files("evidence_rag").joinpath("fixtures")
@@ -162,6 +179,12 @@ def run(args: argparse.Namespace) -> dict:
     dataset = load_dataset(args.dataset)
     audit_split_leakage(dataset)
     inputs = {"dataset": file_sha(dataset=dataset)}
+    if args.command == "audit-retrieval":
+        report = audit_retrieval(dataset, args.split, tuple(args.ks))
+        new_run(args.output)
+        write_json(args.output / "retrieval_audit.json", report)
+        write_json(args.output / "manifest.json", manifest(config, inputs))
+        return {k: v for k, v in report.items() if k not in ("rows", "limitations")}
     if args.command == "evaluate":
         traces = load_traces(args.traces, dataset)
         inputs["traces"] = file_sha(args.traces)
@@ -186,7 +209,7 @@ def run(args: argparse.Namespace) -> dict:
         raise ValueError("pilot cap is 50 questions and 8 rounds; review protocol before scaling")
     examples = sorted(
         (e for e in dataset.examples if e.split == args.split), key=lambda e: e.question.id
-    )[: args.limit]
+    )[args.offset : args.offset + args.limit]
     if not examples:
         raise ValueError("requested partition is empty; inspect split_audit.json")
     reader = HTTPReader.from_env()
@@ -243,12 +266,29 @@ def parser() -> argparse.ArgumentParser:
     sub = result.add_subparsers(dest="command", required=True)
     smoke = sub.add_parser("smoke", help="offline fictional replay; no network or model calls")
     smoke.add_argument("--output", type=Path, required=True)
+    fetch = sub.add_parser(
+        "fetch-hotpot", help="download and verify the pinned public training snapshot"
+    )
+    fetch.add_argument("--allow-download", action="store_true")
+    fetch.add_argument("--output", type=Path, required=True)
+    pilot = sub.add_parser("fetch-hotpot-pilot", help="explicit exploratory row-API block sample")
+    pilot.add_argument("--allow-download", action="store_true")
+    pilot.add_argument("--limit", type=int, default=200)
+    pilot.add_argument("--seed", default="pilot-v1")
+    pilot.add_argument("--output", type=Path, required=True)
     prepare = sub.add_parser("prepare-hotpot", help="convert a local labelled HotpotQA snapshot")
     prepare.add_argument("--input", type=Path, required=True)
     prepare.add_argument("--source-split", choices=("train", "dev"), required=True)
     prepare.add_argument("--limit", type=int, default=200)
     prepare.add_argument("--seed", default="pilot-v1")
     prepare.add_argument("--output", type=Path, required=True)
+    audit = sub.add_parser(
+        "audit-retrieval", help="original-query BM25 feasibility; zero LLM calls"
+    )
+    audit.add_argument("--dataset", type=Path, required=True)
+    audit.add_argument("--split", choices=("train", "calibration", "validation"), required=True)
+    audit.add_argument("--ks", type=int, nargs="+", default=[1, 2, 3, 5, 10])
+    audit.add_argument("--output", type=Path, required=True)
     for name in ("collect", "evaluate"):
         command = sub.add_parser(name)
         command.add_argument("--dataset", type=Path, required=True)
@@ -258,6 +298,7 @@ def parser() -> argparse.ArgumentParser:
         command.add_argument("--output", type=Path, required=True)
         if name == "collect":
             command.add_argument("--limit", type=int, default=5)
+            command.add_argument("--offset", type=int, default=0)
             command.add_argument("--top-k", type=int, default=1)
             command.add_argument("--allow-llm", action="store_true")
         else:

@@ -4,8 +4,8 @@ Start date: 2026-10-20. Indicative research schedule, not a publication or hardw
 
 | Stage | Time | Deliverable / exit gate | Status |
 | --- | --- | --- | --- |
-| Foundation | Now | Independent repo, literature matrix, protocol, gold-free runtime views, tested smoke | Complete locally; 56 tests passed |
-| Novelty / feasibility | Week 1-2 | Full closest-work audit; 200-question training pilot; error taxonomy; split audit and cost profile | Planned |
+| Foundation | Now | Independent repo, literature matrix, protocol, gold-free runtime views, tested smoke | Complete; tests expanded for data ingestion |
+| Novelty / feasibility | Week 1-2 | Full closest-work audit; 200-question training pilot; error taxonomy; split audit and cost profile | Data/split/retrieval audit implemented; real reader configuration pending; novelty unresolved |
 | Strong baselines | Week 3-4 | Faithful feasible Stop-RAG/HALT/structured controls; matched budgets; generation versus retrieval decomposition | Planned |
 | Candidate method | Week 5-6 | Matched rollout labels, lightweight gain/harm model; calibration; no test tuning | Conditional on prior gates |
 | Transfer | Week 7-8 | Held-out dataset, second reader, natural and controlled shift; paired uncertainty | Planned |
@@ -31,6 +31,10 @@ to obtain a positive number. Decide whether a benchmark/analysis paper is warran
 4. Freeze pilot settings and expand to 200 questions only after checking the small run.
 
 No GPU job, background service, model fine-tuning or paid API experiment is running at initialization.
+The full training-shard transfer failed in the initial network environment; no incomplete shard was
+accepted. A separately labelled exploratory row-API acquisition path is available. Local datasets and
+audit artifacts are excluded from the public repository. Pure retrieval audits do not resolve the
+continuation-benefit hypothesis; real reader traces and matched controls are still required.
 
 ## Decisions
 
@@ -40,3 +44,7 @@ No GPU job, background service, model fine-tuning or paid API experiment is runn
 - 2026-10-20: working name budgeted-evidence-rag; no claim of method novelty.
 - 2026-10-20: no inherited data, credentials or service dependencies from prior business projects.
 - 2026-10-20: baseline/replay infrastructure first; method training contingent on novelty and signal.
+- 2026-10-20: explicit public-data downloads, optional Parquet adapter and retrieval-only feasibility
+  audits added; row-API pilots carry non-iid sampling and non-confirmatory provenance.
+- 2026-10-20: full-text checks confirm that repeated-state scoring (Stop-RAG) and verifier transfer
+  (HALT) are existing work. Neither can be claimed as a standalone innovation.

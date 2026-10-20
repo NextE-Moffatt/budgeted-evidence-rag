@@ -15,6 +15,10 @@ Status: draft, to be frozen before confirmatory experiments. No benchmark scores
   Freeze model/config/input hashes before first confirmatory run. CLI --confirmatory is only a guard.
 - No gold support or answer-based source selection at runtime. Test annotations may be used solely
   for final offline scoring. Keep test results out of iterative prompt/threshold design.
+- Row-API exploratory samples are stratified contiguous blocks, not iid question samples. Preserve
+  their block provenance and account for sampling clusters in any later uncertainty analysis. An
+  exploratory API snapshot is not eligible for confirmatory/official benchmark claims merely because
+  local partitions are named train/calibration/validation/test.
 
 ## Controlled Comparisons
 
