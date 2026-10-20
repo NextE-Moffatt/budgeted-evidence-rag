@@ -85,7 +85,7 @@ evidence-rag prepare-hotpot --input data/raw/hotpot-pilot-api/rows.json \
 不能为了跑通实验把同组问题拆开。此转换器是 **distractor 候选集设置**，不是开放全库检索。
 
 在服务器环境中设置 `RAG_LLM_BASE_URL`（以 `/v1` 结尾）、`RAG_LLM_MODEL` 和可选
-`RAG_LLM_API_KEY`，不要把密钥写入仓库、命令行参数或对话。连接明文 HTTP 时禁止携带密钥，
+`RAG_LLM_API_KEY`，不要把密钥写入仓库、命令行参数或对话。默认连接明文 HTTP 时禁止携带密钥，
 环回地址除外。配置好后，显式允许最多 5 题、每题最多 3 次读者调用：
 
 ```bash
@@ -96,6 +96,12 @@ evidence-rag evaluate --dataset data/hotpot-pilot/dataset.json \
   --traces runs/pilot-001/traces.json --split train \
   --max-rounds 3 --threshold 0.8 --output runs/pilot-eval-001
 ```
+
+经人工确认的 VPN 内网服务可显式设置 `RAG_LLM_ALLOW_PRIVATE_HTTP=1`；该开关只允许
+RFC1918 数字地址，不允许公网、任意域名或云元数据地址，不意味着 HTTP 自身提供加密。
+默认仍禁止明文发送密钥。支持该参数的服务可通过 `RAG_LLM_ENABLE_THINKING=0` 或 `1`
+显式控制 `chat_template_kwargs.enable_thinking`；不设置则不发送该扩展。配置会记入运行清单，
+密钥和接口地址不会。推荐使用进程级环境或隐藏终端输入，避免把密钥写入命令行或文件。
 
 采集总开销和回放前缀开销分开报告。当前每轮 BM25 + 单次读者回答/自报信号/下轮查询，
 不调用外部 Judge；自报充分性不等于经校准的可靠度。最大轮数是调用上限，不是美元或输入 token 硬上限。

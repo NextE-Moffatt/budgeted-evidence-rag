@@ -224,6 +224,8 @@ def run(args: argparse.Namespace) -> dict:
                 "prompt_sha256": digest(SYSTEM_PROMPT),
                 "retries": 0,
                 "timeout_seconds": 60,
+                "chat_template_kwargs": getattr(reader, "chat_template_kwargs", None),
+                "private_http_opt_in": getattr(reader, "allow_private_http", False),
                 "query_policy": "reader_next_query_or_question",
                 "retriever": "bm25s-lucene-k1=1.5-b=0.75-stopwords=en-no-stemmer",
                 "question_ids": [e.question.id for e in examples],

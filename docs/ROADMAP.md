@@ -5,7 +5,7 @@ Start date: 2026-10-20. Indicative research schedule, not a publication or hardw
 | Stage | Time | Deliverable / exit gate | Status |
 | --- | --- | --- | --- |
 | Foundation | Now | Independent repo, literature matrix, protocol, gold-free runtime views, tested smoke | Complete; tests expanded for data ingestion |
-| Novelty / feasibility | Week 1-2 | Full closest-work audit; 200-question training pilot; error taxonomy; split audit and cost profile | Data/split/retrieval audit implemented; real reader configuration pending; novelty unresolved |
+| Novelty / feasibility | Week 1-2 | Full closest-work audit; 200-question training pilot; error taxonomy; split audit and cost profile | Data/replay tools verified in a bounded local reader trial; larger feasibility and novelty gates unresolved |
 | Strong baselines | Week 3-4 | Faithful feasible Stop-RAG/HALT/structured controls; matched budgets; generation versus retrieval decomposition | Planned |
 | Candidate method | Week 5-6 | Matched rollout labels, lightweight gain/harm model; calibration; no test tuning | Conditional on prior gates |
 | Transfer | Week 7-8 | Held-out dataset, second reader, natural and controlled shift; paired uncertainty | Planned |

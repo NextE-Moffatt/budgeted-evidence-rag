@@ -85,6 +85,89 @@ def test_credentials_url_guard(url):
         HTTPReader(url, "fixture-model", "sentinel-secret")
 
 
+@pytest.mark.parametrize(
+    "url,allowed",
+    [
+        ("http://10.23.45.67/v1", True),
+        ("http://172.20.1.2/v1", True),
+        ("http://192.168.12.34/v1", True),
+        ("http://8.8.8.8/v1", False),
+        ("http://169.254.169.254/v1", False),
+        ("http://example.invalid/v1", False),
+        ("http://0.0.0.0/v1", False),
+        ("http://172.15.255.255/v1", False),
+        ("http://172.32.0.1/v1", False),
+        ("http://192.169.0.1/v1", False),
+    ],
+)
+def test_private_http_opt_in_does_not_allow_public_or_metadata_endpoints(url, allowed):
+    if allowed:
+        with pytest.raises(ValueError):
+            HTTPReader(url, "fixture", "sentinel-secret")
+        reader = HTTPReader(url, "fixture", "sentinel-secret", allow_private_http=True)
+        reader.close()
+    else:
+        with pytest.raises(ValueError):
+            HTTPReader(url, "fixture", "sentinel-secret", allow_private_http=True)
+
+
+def test_explicit_thinking_payload_and_unknown_usage(dataset):
+    requests = []
+
+    def handler(request):
+        requests.append(json.loads(request.content))
+        return httpx.Response(
+            200,
+            json={
+                "choices": [
+                    {
+                        "message": {
+                            "content": json.dumps(
+                                {
+                                    "answer": None,
+                                    "citations": [],
+                                    "confidence": 0,
+                                    "sufficiency": 0,
+                                    "next_query": "",
+                                }
+                            )
+                        }
+                    }
+                ]
+            },
+        )
+
+    reader = mocked_reader(handler)
+    reader.chat_template_kwargs = {"enable_thinking": False}
+    try:
+        _, inputs, outputs = reader.read(dataset.examples[0].question, (dataset.passages["p1"],))
+        assert inputs is outputs is None
+        assert requests[0]["chat_template_kwargs"] == {"enable_thinking": False}
+    finally:
+        reader.close()
+
+
+def test_reader_env_flags_are_explicit(monkeypatch):
+    monkeypatch.setenv("RAG_LLM_BASE_URL", "http://10.23.45.67/v1")
+    monkeypatch.setenv("RAG_LLM_MODEL", "fixture")
+    monkeypatch.setenv("RAG_LLM_API_KEY", "sentinel-secret")
+    monkeypatch.setenv("RAG_LLM_ALLOW_PRIVATE_HTTP", "1")
+    monkeypatch.setenv("RAG_LLM_ENABLE_THINKING", "0")
+    reader = HTTPReader.from_env()
+    assert reader.allow_private_http
+    assert reader.chat_template_kwargs == {"enable_thinking": False}
+    reader.close()
+    monkeypatch.setenv("RAG_LLM_ALLOW_PRIVATE_HTTP", "yes")
+    with pytest.raises(ValueError):
+        HTTPReader.from_env()
+
+
+@pytest.mark.parametrize("flag", ["false", 1, None])
+def test_private_http_constructor_requires_boolean(flag):
+    with pytest.raises(ValueError, match="explicit boolean"):
+        HTTPReader("http://10.23.45.67/v1", "fixture", "sentinel-secret", allow_private_http=flag)
+
+
 def mocked_reader(handler):
     reader = HTTPReader("https://reader.invalid/v1", "fixture-model", "sentinel-secret")
     reader.client.close()
